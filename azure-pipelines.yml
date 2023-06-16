@@ -5,58 +5,46 @@
 
 trigger:
 - master
-
 pool:
   vmImage: 'ubuntu-latest'
-
 steps:
 - task: NodeTool@0
   inputs:
     versionSpec: '10.x'
   displayName: 'Setup Environment'
-
 - script: npm install
   displayName: 'Install Dependencies'
-
 - script: npx ng lint
   displayName: 'Code Analysis'
-
-- task: SonarCloudPrepare@1
-  inputs:
-    SonarCloud: 'DAPC_AndersonAlexisRuales'
-    organization: 'dapcandersonalexisruales'
-    scannerMode: 'CLI'
-    configMode: 'manual'
-    cliProjectKey: 'dapc_andersonalexisruales'
-    cliProjectName: 'dapc_andersonalexisruales'
-    cliSources: '.'
-
+#- task: SonarCloudPrepare@1
+#  inputs:
+#    SonarCloud: 'DAPC_AndersonAlexisRuales'
+#    organization: 'dapcandersonalexisruales'
+#    scannerMode: 'CLI'
+#    configMode: 'manual'
+#    cliProjectKey: 'dapc_andersonalexisruales'
+#    cliProjectName: 'dapc_andersonalexisruales'
+#    cliSources: '.'
 - script: npx ng build --base-href /helloworld/
   displayName: 'Build'
-
 - script: npx ng test --watch=false --codeCoverage=true
   displayName: 'Tests'
-
 - task: PublishTestResults@2
   condition: succeededOrFailed()
   inputs:
     testResultsFormat: 'JUnit'
     testResultsFiles: '**/TESTS-*.xml'
   displayName: 'Publish Test Results'
-
 - task: PublishCodeCoverageResults@1
   condition: succeededOrFailed()
   inputs:
     codeCoverageTool: 'Cobertura'
     summaryFileLocation: '$(Build.SourcesDirectory)/coverage/ng-azure-devops/cobertura-coverage.xml'
   displayName: 'Publish Code Coverage Results'
-
-- task: SonarCloudAnalyze@1
-
-- task: SonarCloudPublish@1
-  inputs:
-    pollingTimeoutSec: '300'
-
+#- task: SonarCloudAnalyze@1
+#- task: SonarCloudPublish@1
+#  inputs:
+#    pollingTimeoutSec: '300'
 - task: PublishBuildArtifacts@1
   inputs:
     PathtoPublish: 'dist/ng-azure-devops'
